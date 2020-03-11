@@ -19,7 +19,7 @@ let readMoviesJSON = new Promise((resolve, reject) => {
 });
 
 let populateData = (moviesJSON) => {
-    let createMoiveTableQuery = 'CREATE TABLE IF NOT EXISTS movies(Rank integer PRIMARY KEY, Title character varying(255), Description text, Runtime integer, Genre character varying(255), Rating real, Metascore varchar(255), Votes integer, Gross_Earning_in_Mil varchar(255), Director character varying(255), Actor character varying(255), Year integer, dir_id integer references directors(dir_id) on delete cascade) ;';
+    let createMoiveTableQuery = 'create table IF NOT EXISTS movies(Rank integer PRIMARY KEY, Title character varying(255), Description text, Runtime integer, Genre character varying(255), Rating real, Metascore varchar(255), Votes integer, Gross_Earning_in_Mil varchar(255), Director character varying(255), Actor character varying(255), Year integer, dir_id integer references directors(dir_id) on delete cascade) ;';
     let createDirectorTableQuery = 'create table if not exists directors(dir_id serial primary key, name varchar(255));';
     pool
         .connect()
@@ -35,21 +35,30 @@ let populateData = (moviesJSON) => {
                                 client
                                     .query('insert into directors(name) values($1)', [director])
                                     .then(() => {
-
+                                        console.log(index + 1 + " " + director + " inserted");
                                     })
                                     .catch((err) => {
-                                        console.log(err.stack.split("\n")[0]);
+                                        console.error("Unable to insert " + director + " into the directors table");
+                                        console.error("Error Code : " + err.code + " " + err.stack.split("\n")[0]);
                                     })
                                     .finally(() => {
                                         client.release();
                                     })
                             })
+                            .catch((err) => {
+                                console.error("Failed Connecting to database");
+                                console.error("Error Code : " + err.code + " " + err.stack.split("\n")[0]);
+                            });
                     })
-                });
+                })
+                .catch((err) => {
+                    console.error("Unable to create directors table");
+                    console.error("Error Code : " + err.code + " " + err.stack.split("\n")[0]);
+                })
             client
                 .query(createMoiveTableQuery)
                 .then(() => {
-                    moviesJSON.forEach((movie) => {
+                    moviesJSON.forEach((movie, index) => {
                         let values = Object.values(movie);
                         let director = movie.Director;
                         pool
@@ -65,30 +74,46 @@ let populateData = (moviesJSON) => {
                                                 client
                                                     .query("insert into movies values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12, $13)", values)
                                                     .then(() => {
+                                                        console.log(index + 1 + " " + movie.Title + " inserted successfully");
                                                     })
                                                     .catch((err) => {
-                                                        console.log(err.stack.split("\n")[0]);
+                                                        console.error("Query Syntax error while insertin into movies");
+                                                        console.error("Error Code : " + err.code + " " + err.stack.split("\n")[0]);
                                                     })
                                                     .finally(() => {
                                                         client.release();
                                                     });
+                                            })
+                                            .catch((err) => {
+                                                console.error("Unable to connect to database");
+                                                console.error("Error Code : " + err.code + " " + err.stack.split("\n")[0]);
                                             });
                                     })
                                     .catch((err) => {
-                                        console.log(err.stack);
+                                        console.error("Query Syntax error");
+                                        console.error("Error Code : " + err.code + " " + err.stack.split("\n")[0]);
                                     })
                                     .finally(() => {
                                         client.release();
                                     })
+                            })
+                            .catch((err) => {
+                                console.error("Unable to insert Movies data");
+                                console.error("Error Code : " + err.code + " " + err.stack.split("\n")[0]);
                             });
                     })
                 })
                 .catch((err) => {
-                    console.log(err.stack.split("\n")[0]);
+                    console.error("Unable to create Movies table");
+                    console.error("Error Code : " + err.code + " " + err.stack.split("\n")[0]);
                 })
                 .finally(() => {
                     client.release();
                 });
+        })
+        .catch((err) => {
+            console.error("Failed Connecting to database");
+            console.error("Error Code : " + err.code + " " + err.stack.split("\n")[0]);
         });
 }
 
@@ -98,5 +123,8 @@ readMoviesJSON
         populateData(moviesObj);
     })
     .catch((err) => {
-        console.log(err.stack.split("\n")[0]);
+        if (err.code === 'ENOENT') {
+            console.error("Movies JSON data not found");
+            console.error("Check the path: " + err.path);
+        }
     });

@@ -16,7 +16,6 @@ app.use(bodyParser.json());
 
 // Home Route
 app.get('/', (request, response) => {
-    response.end("OK");
 });
 
 // Routes for movies
@@ -128,7 +127,6 @@ app.get('/api/movies/:movieId', (request, response) => {
 app.put('/api/movies/:movieId', (request, response) => {
     let data = request.body;
     let columns = Object.keys(data);
-    let values = Object.values(data);
     let result = [];
     columns.forEach((column) => {
         result.push(column.concat("='").concat(data[column]).concat("'"));

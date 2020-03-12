@@ -16,10 +16,11 @@ app.use(bodyParser.json());
 
 // Home Route
 app.get('/', (request, response) => {
+    throw new Error();
 });
 
 // Routes for movies
-app.get('/api/movies', (request, response) => {
+app.get('/api/movies', (request, response, next) => {
     pool
         .connect()
         .then((client) => {
@@ -29,7 +30,7 @@ app.get('/api/movies', (request, response) => {
                     response.json(res.rows);
                 })
                 .catch((err) => {
-                    response.send(err);
+                    next(err);
                 })
                 .finally(() => {
                     client.release();
@@ -37,11 +38,11 @@ app.get('/api/movies', (request, response) => {
                 });
         })
         .catch((err) => {
-            response.send(`Database not connected ${err}`);
+            next(err);
         });
 
 });
-app.post('/api/movies', (request, response) => {
+app.post('/api/movies', (request, response, next) => {
     let data = request.body;
     let directorName = request.body.director;
     let values = Object.values(data);
@@ -61,20 +62,25 @@ app.post('/api/movies', (request, response) => {
                                         client
                                             .query(`select dir_id from directors where name='${directorName}';`)
                                             .then((res) => {
-                                                // console.log(res.rows);
                                                 values.push(res.rows[0].dir_id);
+                                            })
+                                            .catch((err) => {
+                                                next(err);
                                             });
                                     })
+                                    .catch((err) => {
+                                        next(err);
+                                    });
                             })
                             .catch((err) => {
-                                response.send(err);
+                                next(err);
                             });
                         client.query('insert into movies values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)', values)
                             .then((res) => {
                                 response.json(res.rows);
                             })
                             .catch((err) => {
-                                response.send(err);
+                                next(err);
                             });
                     }
                     else {
@@ -85,17 +91,20 @@ app.post('/api/movies', (request, response) => {
                                 client
                                     .query(`insert into movies values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, values)
                                     .then(() => {
-
+                                        response.send("Operation Successfull");
                                     })
                                     .catch((err) => {
-                                        console.log(err);
+                                        next(err);
                                     });
+                            })
+                            .catch((err) => {
+                                next(err);
                             });
                     }
 
                 })
                 .catch((err) => {
-                    response.send(err);
+                    next(err);
                 })
                 .finally(() => {
                     client.release();
@@ -103,7 +112,7 @@ app.post('/api/movies', (request, response) => {
         });
 })
 
-app.get('/api/movies/:movieId', (request, response) => {
+app.get('/api/movies/:movieId', (request, response, next) => {
     pool
         .connect()
         .then((client) => {
@@ -113,7 +122,7 @@ app.get('/api/movies/:movieId', (request, response) => {
                     response.json(res.rows);
                 })
                 .catch((err) => {
-                    response.send(err);
+                    next(err);
                 })
                 .finally(() => {
                     client.release();
@@ -121,10 +130,10 @@ app.get('/api/movies/:movieId', (request, response) => {
                 });
         })
         .catch((err) => {
-            response.send(`Database not connected ${err}`);
+            next(err);
         });
 })
-app.put('/api/movies/:movieId', (request, response) => {
+app.put('/api/movies/:movieId', (request, response, next) => {
     let data = request.body;
     let columns = Object.keys(data);
     let result = [];
@@ -141,8 +150,7 @@ app.put('/api/movies/:movieId', (request, response) => {
                     response.json(res.rows);
                 })
                 .catch((err) => {
-                    console.log(err);
-                    response.send(err);
+                    next(err);
                 })
                 .finally(() => {
                     client.release();
@@ -150,10 +158,10 @@ app.put('/api/movies/:movieId', (request, response) => {
                 });
         })
         .catch((err) => {
-            response.send(`Database not connected ${err}`);
+            next(err);
         });
 })
-app.delete('/api/movies/:movieId', (request, response) => {
+app.delete('/api/movies/:movieId', (request, response, next) => {
     pool
         .connect()
         .then((client) => {
@@ -163,8 +171,7 @@ app.delete('/api/movies/:movieId', (request, response) => {
                     response.json(res.rows);
                 })
                 .catch((err) => {
-                    console.log(err);
-                    response.send(err);
+                    next(err);
                 })
                 .finally(() => {
                     client.release();
@@ -172,12 +179,12 @@ app.delete('/api/movies/:movieId', (request, response) => {
                 });
         })
         .catch((err) => {
-            response.send(`Database not connected ${err}`);
+            next(err);
         });
 })
 
 // Routes for directors
-app.get('/api/directors', (request, response) => {
+app.get('/api/directors', (request, response, next) => {
     pool
         .connect()
         .then((client) => {
@@ -187,7 +194,7 @@ app.get('/api/directors', (request, response) => {
                     response.json(res.rows);
                 })
                 .catch((err) => {
-                    response.send(err);
+                    next(err);
                 })
                 .finally(() => {
                     client.release();
@@ -195,10 +202,10 @@ app.get('/api/directors', (request, response) => {
                 });
         })
         .catch((err) => {
-            response.send(`Database not connected ${err}`);
+            next(err);
         });
 })
-app.post('/api/directors', (request, response) => {
+app.post('/api/directors', (request, response, next) => {
     let data = request.body;
     data.forEach((director) => {
         let value = Object.values(director);
@@ -213,7 +220,7 @@ app.post('/api/directors', (request, response) => {
                         response.json(res.rows);
                     })
                     .catch((err) => {
-                        response.status(500).send("Server Error");
+                        next(err);
                     })
                     .finally(() => {
                         client.release();
@@ -221,12 +228,12 @@ app.post('/api/directors', (request, response) => {
                     });
             })
             .catch((err) => {
-                response.send(`Database not connected ${err}`);
+                next(err);
             });
     });
 })
 
-app.get('/api/directors/:directorId', (request, response) => {
+app.get('/api/directors/:directorId', (request, response, next) => {
     pool
         .connect()
         .then((client) => {
@@ -236,8 +243,7 @@ app.get('/api/directors/:directorId', (request, response) => {
                     response.json(res.rows);
                 })
                 .catch((err) => {
-                    console.log(err);
-                    response.send(err);
+                    next(err);
                 })
                 .finally(() => {
                     client.release();
@@ -245,10 +251,10 @@ app.get('/api/directors/:directorId', (request, response) => {
                 });
         })
         .catch((err) => {
-            response.send(`Database not connected ${err}`);
+            next(err);
         });
 })
-app.put('/api/directors/:directorId', (request, response) => {
+app.put('/api/directors/:directorId', (request, response, next) => {
     let data = request.body;
     let columns = Object.keys(data);
     let values = Object.values(data);
@@ -266,8 +272,7 @@ app.put('/api/directors/:directorId', (request, response) => {
                     response.json(res.rows);
                 })
                 .catch((err) => {
-                    console.log(err);
-                    response.send(err);
+                    next(err);
                 })
                 .finally(() => {
                     client.release();
@@ -275,10 +280,10 @@ app.put('/api/directors/:directorId', (request, response) => {
                 });
         })
         .catch((err) => {
-            response.send(`Database not connected ${err}`);
+            next(err);
         });
 })
-app.delete('/api/directors/:directorId', (request, response) => {
+app.delete('/api/directors/:directorId', (request, response, next) => {
     pool
         .connect()
         .then((client) => {
@@ -288,8 +293,7 @@ app.delete('/api/directors/:directorId', (request, response) => {
                     response.json(res.rows);
                 })
                 .catch((err) => {
-                    console.log(err);
-                    response.send(err);
+                    next(err);
                 })
                 .finally(() => {
                     client.release();
@@ -297,8 +301,13 @@ app.delete('/api/directors/:directorId', (request, response) => {
                 });
         })
         .catch((err) => {
-            response.send(`Database not connected ${err}`);
+            next(err);
         });
+})
+
+app.use((err, req, res, next) => {
+    console.error(err.stack.split("\n")[0]);
+    res.status(500).send('Internal Server Error');
 })
 
 app.listen(port, () => console.log(`API server running on port ${port}`));

@@ -4,13 +4,12 @@ Run the following command:
 
 > $ npm install
 
-create new file config.js and write your own environment variables according to your postgres database
+create new database in sql with the name movies
 
-create new database in postgres with the name moviesdb
+run following command to migrate and seed db with movies.json
 
-To populate this moviesdb with the movies data in movies.json
-
-> $ npm start
+> $ npm run migrate:db\
+> $ npm run seed:db
 
 After that API server can be started by running following command:
 

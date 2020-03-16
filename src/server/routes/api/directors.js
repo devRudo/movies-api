@@ -1,38 +1,44 @@
 const express = require('express');
-const path = require('path');
+const { DataTypes } = require('sequelize');
 const cwd = process.cwd();
-const bodyParser = require('body-parser');
-const query = require('../../database/query').query;
-const router = express.Router();
+const logger = require(cwd + '/config/logger');
+const Movie = require(cwd + '/src/server/models/Movie');
+const Director = require(cwd + '/src/server/models/Director');
+
 
 let directors = () => {
+    const router = express.Router();
     router.get('/', (request, response, next) => {
-        query('select * from directors;')
-            .then((res) => {
-                response.json(res.rows);
+        Director
+            .findAll()
+            .then((directors) => {
+                response.json(directors);
             })
             .catch((err) => {
                 next(err);
-            })
+            });
     });
     router.post('/', (request, response, next) => {
         let data = request.body;
-        data.forEach((director) => {
-            let value = Object.values(director);
-            query('insert into directors(name) values($1)', value)
-                .then((res) => {
-                    response.json(request.body);
-                })
-                .catch((err) => {
-                    next(err);
-                });
-        });
+        Director
+            .create(data)
+            .then((created) => {
+                response.json(created);
+            })
+            .catch((err) => {
+                next(err);
+            });
     });
 
     router.get('/:directorId', (request, response, next) => {
-        query('select * from directors where dir_id=$1', [request.params.directorId])
-            .then((res) => {
-                response.json(res.rows);
+        Director
+            .findOne({
+                where: {
+                    dir_id: request.params.directorId
+                }
+            })
+            .then((director) => {
+                response.json(director);
             })
             .catch((err) => {
                 next(err);
@@ -41,16 +47,14 @@ let directors = () => {
 
     router.put('/:directorId', (request, response, next) => {
         let data = request.body;
-        let columns = Object.keys(data);
-        let values = Object.values(data);
-        let result = [];
-        columns.forEach((column) => {
-            result.push(column.concat("='").concat(data[column]).concat("'"));
-        })
-        result = result.join(",");
-        query(`update directors set ${result} where dir_id = $1`, [request.params.directorId])
-            .then((res) => {
-                response.json(request.body);
+        Director
+            .update(data, {
+                where: {
+                    dir_id: request.params.directorId
+                }
+            })
+            .then((updated) => {
+                response.json(updated);
             })
             .catch((err) => {
                 next(err);
@@ -58,9 +62,13 @@ let directors = () => {
     });
 
     router.delete('/:directorId', (request, response, next) => {
-        query('delete from directors where dir_id=$1;', [request.params.directorId])
-            .then((res) => {
-                response.send("Director with the id " + request.params.directorId + " is deleted");
+        Director.destroy({
+            where: {
+                dir_id: request.params.directorId
+            }
+        })
+            .then((deleted) => {
+                response.json(deleted);
             })
             .catch((err) => {
                 next(err);
@@ -68,7 +76,7 @@ let directors = () => {
     });
 
     router.use((err, req, res, next) => {
-        console.error(err.stack.split("\n")[0]);
+        logger.error(err.stack.split("\n")[0]);
         res.send('Internal Server Error');
     });
     return router;

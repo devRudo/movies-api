@@ -1,12 +1,16 @@
 const express = require('express');
-const query = require('../../database/query').query;
+const { DataTypes } = require('sequelize');
+const cwd = process.cwd();
+const logger = require(cwd + '/config/logger');
+const Movie = require(cwd + '/src/server/models/Movie');
+const Director = require(cwd + '/src/server/models/Director');
 
 let movies = () => {
     const router = express.Router();
     router.get('/', (request, response, next) => {
-        query('select * from movies')
-            .then((res) => {
-                response.json(res.rows);
+        Movie.findAll()
+            .then((movies) => {
+                response.json(movies);
             })
             .catch((err) => {
                 next(err);
@@ -15,93 +19,124 @@ let movies = () => {
     router.post('/', (request, response, next) => {
         let data = request.body;
         let directorName = request.body.director;
-        let values = Object.values(data);
-        query(`select dir_id from directors where name='${directorName}';`)
-            .then((res) => {
-                if (res.rows.length === 0) {
-                    query('insert into directors(name) values($1)', [directorName])
-                        .then(() => {
-                            query(`select dir_id from directors where name='${directorName}';`)
-                                .then((res) => {
-                                    values.push(res.rows[0].dir_id);
+        Director
+            .findAndCountAll({
+                where: {
+                    name: directorName
+                }
+            })
+            .then((director) => {
+                if (director.count === 0) {
+                    Director
+                        .create({
+                            name: directorName
+                        })
+                        .then((director) => {
+                            Movie
+                                .create(data)
+                                .then((created) => {
+                                    Movie
+                                        .update({
+                                            dir_id: director.dir_id
+                                        }, {
+                                            where: {
+                                                director: created.director
+                                            }
+                                        })
+                                        .then((updated) => {
+                                            response.json(updated);
+                                        })
+                                        .catch((err) => {
+                                            next(err);
+                                        });
                                 })
-                                .then()
                                 .catch((err) => {
                                     next(err);
                                 })
                         })
                         .catch((err) => {
                             next(err);
-                        });
-                    query('insert into movies values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)', values)
-                        .then((res) => {
-                            response.json(res.rows);
                         })
-                        .catch((err) => {
-                            next(err);
-                        });
                 }
                 else {
-                    query(`select dir_id from directors where name='${directorName}';`)
-                        .then((res) => {
-                            values.push(res.rows[0].dir_id);
-                            query(`insert into movies values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, values)
-                                .then(() => {
-                                    response.send("Operation Successfull");
+                    Movie
+                        .create(data)
+                        .then((created) => {
+                            Director
+                                .findOne({
+                                    where: {
+                                        name: created.director
+                                    }
                                 })
-                                .catch((err) => {
-                                    next(err);
-                                });
-                        })
-                        .catch((err) => {
-                            next(err);
+                                .then((director) => {
+                                    Movie
+                                        .update({
+                                            dir_id: director.dir_id
+                                        }, {
+                                            where: {
+                                                rank: created.rank
+                                            }
+                                        })
+                                        .then((updated) => {
+                                            response.json(updated);
+                                        })
+                                        .catch((err) => {
+                                            next(err);
+                                        })
+                                })
+
                         });
                 }
             })
             .catch((err) => {
-                next(err);
+
             });
-    })
+    });
 
     router.get('/:movieId', (request, response, next) => {
-        query('select * from movies where rank=$1', [request.params.movieId])
-            .then((res) => {
-                response.json(res.rows);
+        Movie
+            .findOne({
+                where: {
+                    rank: request.params.movieId
+                }
             })
-            .catch((err) => {
-                next(err);
-            });
-    })
-    router.put('/:movieId', (request, response, next) => {
-        let data = request.body;
-        let columns = Object.keys(data);
-        let result = [];
-        columns.forEach((column) => {
-            result.push(column.concat("='").concat(data[column]).concat("'"));
-        })
-        result = result.join(",");
-
-        query(`update movies set ${result} where rank = $1`, [request.params.movieId])
-            .then((res) => {
-                response.json(res.rows);
+            .then((movie) => {
+                response.json(movie);
             })
             .catch((err) => {
                 next(err);
             });
     });
+    router.put('/:movieId', (request, response, next) => {
+        let data = request.body;
+        Movie
+            .update(data, {
+                where: {
+                    rank: request.params.movieId
+                }
+            })
+            .then((updated) => {
+                response.json(updated);
+            })
+    });
 
     router.delete('/:movieId', (request, response, next) => {
-        query('delete from movies where rank=$1;', [request.params.movieId])
-            .then((res) => {
-                response.json(res.rows);
+        Movie
+            .destroy({
+                where: {
+                    rank: request.params.movieId
+                }
+            })
+            .then((deleted) => {
+                response.json(deleted);
             })
             .catch((err) => {
                 next(err);
             });
     })
     router.use((err, req, res, next) => {
-        console.error(err.stack.split("\n")[0]);
-        res.status(500).send('Internal Server Error');
+        logger.error(err.stack.split("\n")[0]);
+        res.status(500).send(err.stack);
     })
     return router;
 }

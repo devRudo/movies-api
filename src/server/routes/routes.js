@@ -1,6 +1,6 @@
 module.exports = (app) => {
     app.get('/', (request, response, next) => {
-        throw new Error();
+        response.render('pages/index');
     });
     app.use('/api/movies', require('./api/movies.js')());
     app.use('/api/directors', require('./api/directors.js')());

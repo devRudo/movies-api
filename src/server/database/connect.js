@@ -1,8 +1,9 @@
-const path = require('path');
+const { Sequelize } = require('sequelize');
 const cwd = process.cwd();
-// for automatically fetching environment variables from .env file
-require('dotenv').config({ path: path.join(cwd, '/config.js') });
-const { Pool } = require('pg');
-const pool = new Pool();
+const logger = require(cwd + '/config/logger');
 
-module.exports = { pool };
+const sequelize = new Sequelize('mysql://vijay:rudo@localhost/movies', {
+    logging: false
+});
+
+module.exports = sequelize;

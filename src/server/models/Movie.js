@@ -1,6 +1,6 @@
 const cwd = process.cwd();
 const Sequelize = require('sequelize');
-const sequelize = require(cwd + '/src/server/database/connect');
+const { sequelize } = require(cwd + '/src/server/database/connect');
 let Movie = sequelize.define('movie', {
     rank: {
         type: Sequelize.INTEGER(10),

@@ -8,8 +8,8 @@ create new database in sql with the name movies
 
 run following command to migrate and seed db with movies.json
 
-> $ npm run migrate:db\
-> $ npm run seed:db
+> $ npm run db:migrate\
+> $ npm run db:seed
 
 After that API server can be started by running following command:
 

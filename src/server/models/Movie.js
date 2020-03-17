@@ -42,8 +42,7 @@ let Movie = sequelize.define('movie', {
     }
 }, {
     sequelize,
-    modelName: 'movie',
-    timestamps: false
+    modelName: 'movie'
 });
 
 module.exports = Movie;

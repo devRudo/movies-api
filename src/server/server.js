@@ -10,9 +10,11 @@ const port = 3000;
 const viewsDirectory = path.join(cwd, '/src/server/views');
 
 // Serving static files
+app.use(express.static(path.join(cwd, '/src/public')));
 app.set('views', viewsDirectory);
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
+
 
 const router = require('./routes/routes.js')(app);
 

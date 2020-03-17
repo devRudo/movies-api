@@ -13,8 +13,7 @@ let Director = sequelize.define('director', {
     }
 }, {
     sequelize,
-    modelName: 'director',
-    timestamps: false
+    modelName: 'director'
 });
 
 module.exports = Director;

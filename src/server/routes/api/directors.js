@@ -1,8 +1,7 @@
 const express = require('express');
-const { DataTypes } = require('sequelize');
+const Joi = require('@hapi/joi');
 const cwd = process.cwd();
 const logger = require(cwd + '/config/logger');
-const Movie = require(cwd + '/src/server/models/Movie');
 const Director = require(cwd + '/src/server/models/Director');
 
 
@@ -20,21 +19,38 @@ let directors = () => {
     });
     router.post('/', (request, response, next) => {
         let data = request.body;
-        Director
-            .create(data)
-            .then((created) => {
-                response.json(created);
-            })
-            .catch((err) => {
-                next(err);
-            });
+        const schema = Joi.object({
+            name: Joi.string()
+                .alphanum()
+                .min(3)
+                .required()
+        });
+        try {
+            const value = schema.validate(data);
+            if (value.error === undefined) {
+                Director
+                    .create(data)
+                    .then((created) => {
+                        response.json(created);
+                    })
+                    .catch((err) => {
+                        next(err);
+                    });
+            }
+            else {
+                response.status(400).send(value.error);
+            }
+        }
+        catch (err) {
+            next(err);
+        }
     });
 
     router.get('/:directorId', (request, response, next) => {
         Director
             .findOne({
                 where: {
-                    dir_id: request.params.directorId
+                    id: request.params.directorId
                 }
             })
             .then((director) => {
@@ -47,24 +63,41 @@ let directors = () => {
 
     router.put('/:directorId', (request, response, next) => {
         let data = request.body;
-        Director
-            .update(data, {
-                where: {
-                    dir_id: request.params.directorId
-                }
-            })
-            .then((updated) => {
-                response.json(updated);
-            })
-            .catch((err) => {
-                next(err);
-            });
+        const schema = Joi.object({
+            name: Joi.string()
+                .alphanum()
+                .min(3)
+                .required()
+        });
+        try {
+            const value = schema.validate(data);
+            if (value.error === undefined) {
+                Director
+                    .update(data, {
+                        where: {
+                            id: request.params.directorId
+                        }
+                    })
+                    .then((updated) => {
+                        response.json(updated);
+                    })
+                    .catch((err) => {
+                        next(err);
+                    });
+            }
+            else {
+                response.status(400).send(value.error);
+            }
+        }
+        catch (err) {
+            next(err);
+        }
     });
 
     router.delete('/:directorId', (request, response, next) => {
         Director.destroy({
             where: {
-                dir_id: request.params.directorId
+                id: request.params.directorId
             }
         })
             .then((deleted) => {
@@ -76,8 +109,13 @@ let directors = () => {
     });
 
     router.use((err, req, res, next) => {
-        logger.error(err.stack.split("\n")[0]);
-        res.send('Internal Server Error');
+        logger.error(err);
+        if (Array.isArray(err)) {
+            res.status(500).send('Internal Server Error');
+        }
+        else {
+            res.status(500).send(err);
+        }
     });
     return router;
 };

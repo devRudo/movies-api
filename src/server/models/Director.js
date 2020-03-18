@@ -2,7 +2,7 @@ const cwd = process.cwd();
 const Sequelize = require('sequelize');
 const { sequelize } = require(cwd + '/src/server/database/connect');
 let Director = sequelize.define('director', {
-    dir_id: {
+    id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
@@ -10,6 +10,14 @@ let Director = sequelize.define('director', {
     name: {
         type: Sequelize.STRING,
         unique: true
+    },
+    createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false
+    },
+    updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false
     }
 }, {
     sequelize,

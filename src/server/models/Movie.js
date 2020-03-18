@@ -39,6 +39,17 @@ let Movie = sequelize.define('movie', {
     },
     year: {
         type: Sequelize.INTEGER
+    },
+    dir_id: {
+        type: Sequelize.INTEGER
+    },
+    createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false
+    },
+    updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false
     }
 }, {
     sequelize,

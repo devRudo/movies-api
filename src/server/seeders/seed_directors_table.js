@@ -24,6 +24,8 @@ module.exports = {
                 Array.from(new Set(movies.map(movie => movie.Director))).map((director) => {
                     let directorsObj = {};
                     directorsObj.name = director;
+                    directorsObj.createdAt = new Date();
+                    directorsObj.updatedAt = new Date();
                     directors.push(directorsObj);
                 });
                 query.bulkInsert('directors', directors);

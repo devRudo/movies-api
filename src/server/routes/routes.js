@@ -4,6 +4,9 @@ module.exports = (app) => {
     });
     app.use('/api/movies', require('./api/movies.js')());
     app.use('/api/directors', require('./api/directors.js')());
+    app.use('/movies', require('./web/movies.js')());
+    app.use('/directors', require('./web/directors.js')());
+
     app.use('*', (req, res, next) => {
         res.status(404).json({ err: "API Endpoint " + req.originalUrl + " does not exists" });
         next();

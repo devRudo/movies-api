@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') -%>
+    <link rel="stylesheet" href="./css/movies.css">
+</head>
+<body>
+<div id="background"></div>
+<header>
+    <%- include('../partials/header') -%>
+</header>
+
+<main >
+    <p>Total movies : <%- movies.length -%></p>
+    <ul class="flex-container">
+        <% movies.forEach((movie)=>{ %>
+            <a href="/movies/<%- movie.rank -%>"><li class="flex-item"><%- movie.title -%></li></a>
+        <% }) %>
+    </ul>
+</main>
+
+<footer>
+    <%- include('../partials/footer') -%>
+</footer>
+
+</body>
+</html>

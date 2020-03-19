@@ -13,7 +13,7 @@ run following command to migrate and seed db with movies.json
 
 After that API server can be started by running following command:
 
-> $ npm run serve\
+> $ npm start\
 > API Server is running on port 3000
 
 Go to the link http://localhost:3000/ to acceess the API documentation

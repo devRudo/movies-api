@@ -9,7 +9,7 @@
     "db:migrate:undo": "node ./src/server/database/migrate.js undo",
     "db:seed": "node ./src/server/database/seed.js do",
     "db:seed:undo": "node ./src/server/database/seed.js undo",
-    "serve": "nodemon ./src/server/server.js "
+    "start": "nodemon ./src/server/server.js "
   },
   "repository": {
     "type": "git",

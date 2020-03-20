@@ -1,5 +1,4 @@
 const express = require('express');
-const Joi = require('@hapi/joi');
 const cwd = process.cwd();
 const path = require('path');
 const logger = require(cwd + '/config/logger');

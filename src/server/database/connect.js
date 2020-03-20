@@ -1,11 +1,15 @@
 const { Sequelize } = require('sequelize');
 const cwd = process.cwd();
 const logger = require(cwd + '/config/logger');
-require('dotenv-extended').load();
+const config = require(cwd + '/config/config');
+let options = {};
+if (config.NODE_ENV !== 'production') {
+    options.overrideProcessEnv = true
+    require('dotenv-extended').load(options);
+}
 
-const sequelize = new Sequelize(process.env.MYSQL_DATABASE, process.env.MYSQL_USERNAME, process.env.MYSQL_PASSWORD, {
+const sequelize = new Sequelize(config.mysql.url, {
     dialect: 'mysql',
-    // timezone: '+05:30',
     logging: msg => logger.database(msg)
 });
 

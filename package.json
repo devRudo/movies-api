@@ -2,9 +2,8 @@
   "name": "movies-api-vijay",
   "version": "1.0.0",
   "description": "",
-  "main": "./server/server.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "db:migrate": "node ./src/server/database/migrate.js do",
     "db:migrate:undo": "node ./src/server/database/migrate.js undo",
     "db:seed": "node ./src/server/database/seed.js do",

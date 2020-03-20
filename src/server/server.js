@@ -17,6 +17,6 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 
 
-const router = require('./routes/routes.js')(app);
+const router = require(path.join(cwd, '/src/server/routes/routes.js'))(app);
 
 router.listen(port, () => logger.info(`API server running on port ${port}`));

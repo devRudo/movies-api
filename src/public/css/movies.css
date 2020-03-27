@@ -1,0 +1,102 @@
+.grid-container {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    justify-items: stretch;
+    grid-gap: 20px;
+
+}
+
+.grid-container a {
+    text-decoration: none;
+}
+
+.grid-item {
+    background: whitesmoke;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 30px;
+    color: darkslategray;
+}
+
+.grid-item:hover {
+    box-shadow: 0 0 20px #333;
+    background-color : #127aa3;
+    color: whitesmoke;
+}
+
+.card-title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rank {
+    background: url('/images/rank.png') center no-repeat;
+    background-size: contain;
+    color: white;
+    text-align: center;
+    width: 60px;
+    height: 60px;
+    padding: 10px;
+}
+
+.movie-title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 5px;
+}
+
+.badge {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.badge p {
+    background-color: darkred;
+    padding: 10px;
+    color: white;
+    border-radius: 20px;
+}
+
+.movie-detail {
+    display: flex;
+    flex-direction: column;
+}
+
+.year-rating {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.year{
+    background: #4ccc8d;
+    padding: 10px 20px;
+    color: white;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('/images/rating.png') center right no-repeat;
+    background-size: contain;
+    width: 80px;
+    height: 80px;
+    font-weight: bold;
+    font-size: 20px;
+    align-self: flex-end;
+}
+
+.movie-detail {
+    font-size: 1.2rem;
+}
+
+.movie-detail li {
+    padding: 5px;
+    margin-bottom: 10px;
+}

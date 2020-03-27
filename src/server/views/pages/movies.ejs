@@ -5,16 +5,29 @@
     <link rel="stylesheet" href="./css/movies.css">
 </head>
 <body>
-<div id="background"></div>
 <header>
     <%- include('../partials/header') -%>
 </header>
 
 <main >
-    <p>Total movies : <%- movies.length -%></p>
-    <ul class="flex-container">
+    <ul class="grid-container">
         <% movies.forEach((movie)=>{ %>
-            <a href="/movies/<%- movie.rank -%>"><li class="flex-item"><%- movie.title -%></li></a>
+            <a href="/movies/<%- movie.rank -%>">
+                <li class="grid-item">
+                    <ul class="card-title">
+                        <li class="rank"><%= movie.rank %></li>
+                        <li class="movie-title"><%= movie.title %></li>
+                    </ul>
+                    <div class="badge"><p><%= movie.genre %></p></div>
+                    <ul class="movie-detail">
+                        <li><b>Directed By :</b> <%= movie.director %></li>
+                        <li><b>Actor in Lead Role :</b> <%= movie.actor %></li>
+                        <li><b>Movie Runtime : </b><%= movie.runtime %> minutes</li>
+                        <li><b>Total Earnings : </b><%= movie.gross_earning_in_mil %> millions</li>
+                        <li class="year-rating"><span class="year"><%= movie.year %></span><span class="rating"><%= movie.rating %></span></li>
+                    </ul>
+                </li>
+            </a>
         <% }) %>
     </ul>
 </main>

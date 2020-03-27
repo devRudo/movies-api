@@ -5,16 +5,14 @@
     <link rel="stylesheet" href="/css/directors.css">
 </head>
 <body>
-<div id="background"></div>
 <header>
     <%- include('../partials/header') -%>
 </header>
 
 <main>
-    <p>Total directors : <%- directors.length -%></p>
-    <ul class="flex-container">
+    <ul class="grid-container">
         <% directors.forEach((director)=>{ %>
-            <a href="/directors/<%- director.id -%>"><li class="flex-item"><%- director.name -%></li></a>
+            <a href="/directors/<%- director.id -%>"><li class="grid-item"><%- director.name -%></li></a>
         <% }) %>
     </ul>
 </main>

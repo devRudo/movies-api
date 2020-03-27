@@ -1,0 +1,31 @@
+.grid-container {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    justify-items: stretch;
+    grid-gap: 20px;
+}
+
+.grid-container a {
+    text-decoration: none;
+}
+
+.grid-item {
+    background: whitesmoke;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 30px;
+    color: darkslategray;
+}
+
+.grid-item:hover {
+    box-shadow: 0 0 20px #333;
+    background-color : #127aa3;
+    color: whitesmoke;
+}
+
+.card-title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

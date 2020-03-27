@@ -1,0 +1,43 @@
+/* linear-gradient(to bottom right, #100cfc, #d05fef) */
+body {
+    background-image: url('../images/bg-1.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #fff;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#brand{
+    display: flex;
+    align-items: center;
+    width: 70px;
+}
+
+nav ul{
+    display: flex;
+    list-style: none;
+}
+
+nav ul li{
+    padding: 20px;
+}
+
+nav ul li.active{
+    background: #127aa3;
+}
+
+nav ul li:hover{
+    background: #d120a5;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
